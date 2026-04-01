@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>إلى درتي ✨</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@300;500;700&family=Amiri:ital@1&display=swap');
+        :root { --pink: #ff4d6d; --soft: #ffe5ec; --text: #4a4e69; }
+        
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: #fdf0f0; font-family: 'Alexandria', sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+        }
+
+        /* تعديل الأبعاد لتكون متناسقة */
+        .card { 
+            background: rgba(255, 255, 255, 0.98); 
+            width: 92%; max-width: 380px; 
+            min-height: 320px; 
+            max-height: 85vh; /* تقليل الارتفاع ليكون ملموماً أكثر */
+            padding: 25px; border-radius: 35px; text-align: center; 
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.12); border: 1px solid white; 
+            display: none; position: relative; overflow-y: auto; box-sizing: border-box;
+        }
+
+        .active { display: flex !important; flex-direction: column; justify-content: center; align-items: center; }
+
+        .timer-grid { 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; 
+            margin-bottom: 15px; background: var(--soft); padding: 10px; 
+            border-radius: 20px; width: 100%; box-sizing: border-box;
+        }
+        .timer-unit { display: flex; flex-direction: column; align-items: center; }
+        .timer-value { font-size: 14px; font-weight: 800; color: var(--pink); background: white; width: 100%; padding: 6px 0; border-radius: 10px; }
+        .timer-label { font-size: 9px; color: var(--text); margin-top: 4px; font-weight: bold; }
+
+        .btn { 
+            background: var(--pink); color: white; border: none; 
+            width: 100%; padding: 14px; border-radius: 18px; 
+            font-weight: 700; cursor: pointer; font-size: 14px; 
+            margin-bottom: 8px; transition: 0.3s; outline: none;
+        }
+        .btn:active { transform: scale(0.96); }
+
+        #noBtn { background: #666; width: 45%; margin: 5px; }
+        #yesBtn { background: var(--pink); width: 45%; margin: 5px; }
+
+        .content-box { 
+            background: #fffcfc; padding: 18px; border-radius: 22px; 
+            border: 1px dashed var(--pink); margin-bottom: 12px; 
+            font-family: 'Amiri', serif; font-size: 18px; 
+            color: #555; line-height: 1.6; width: 100%; box-sizing: border-box;
+        }
+
+        input { 
+            width: 100%; padding: 14px; border-radius: 15px; 
+            border: 1.5px solid #eee; margin-bottom: 15px; 
+            text-align: center; outline: none; font-size: 15px; box-sizing: border-box;
+        }
+        
+        video { width: 100%; border-radius: 20px; margin-bottom: 12px; background: #000; }
+
+        /* ستايل صفحة الانتظار */
+        .waiting-text { font-size: 20px; color: var(--pink); font-weight: 700; margin-bottom: 10px; }
+        .dots { display: inline-block; width: 10px; height: 10px; background: var(--pink); border-radius: 50%; margin: 0 3px; animation: bounce 0.6s infinite alternate; }
+        .dots:nth-child(2) { animation-delay: 0.2s; }
+        .dots:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+        #banOverlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: white; z-index: 9999; display: none; 
+            flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; padding: 20px; box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="banOverlay">
+        <h1 style="color: var(--pink);">ممنوعة من الدخول! 😤</h1>
+        <p>قلتِ "لا"؟ هذا عقابكِ..</p>
+        <div id="banTimer" style="font-size: 50px; font-weight: bold; color: var(--text);">02:00</div>
+    </div>
+
+    <div id="loginStep" class="card active animate__animated animate__fadeIn">
+        <h2 style="margin-bottom: 20px;">هدية درتي ✨</h2>
+        <input type="password" id="passInput" placeholder="أدخلي السر">
+        <button class="btn" onclick="checkPass()">دخول</button>
+    </div>
+
+    <div id="askStep" class="card animate__animated">
+        <h2 style="margin-bottom: 25px;">تحبيني؟ 🥺</h2>
+        <div style="width: 100%; display: flex; justify-content: center;">
+            <button id="yesBtn" class="btn" onclick="acceptLove()">أي ❤️</button>
+            <button id="noBtn" class="btn" onclick="handleNo()">لا 💔</button>
+        </div>
+    </div>
+
+    <div id="menuStep" class="card animate__animated">
+        <div class="timer-grid daysDisp"></div>
+        <h2 style="margin-bottom: 15px;">أهلاً بكِ يا درتي 🤍</h2>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('infoStep')">💡 معلوماتك</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('designStep')">🎨 تصميم</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('musicStep')">🎬 لحن</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('forYouStep')">✨ لكِ</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('poemStep')">📜 غزل</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('messageStep')">💌 كلمتي</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('message2Step')">💌 كلمتي 2</button>
+        <button class="btn" style="background:#4a4e69; margin-top:10px;" onclick="location.reload()">خروج</button>
+    </div>
+
+    <div id="designStep" class="card animate__animated">
+        <div class="timer-grid daysDisp"></div>
+        <div style="padding: 40px 0;">
+            <div class="waiting-text">قيد انتظار عيون درتي</div>
+            <div><span class="dots"></span><span class="dots"></span><span class="dots"></span></div>
+            <p style="color: #888; font-size: 13px; margin-top: 20px;">يتم التجهيز لشيء يليق بكِ...</p>
+        </div>
+        <button class="btn" onclick="goTo('menuStep')">رجوع</button>
+    </div>
+
+    <div id="infoStep" class="card animate__animated">
+        <div class="timer-grid daysDisp"></div>
+        <h2>هل تعرفين؟ 🤔</h2>
+        <div class="content-box" id="infoBox"></div>
+        <button class="btn" onclick="loadRandomInfo()">معلومة أخرى 🔄</button>
+        <button class="btn" style="background:#666;" onclick="goTo('menuStep')">رجوع</button>
+    </div>
+
+    <div id="musicStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>لحننا 🎵</h2><video id="myVideo" controls playsinline><source src="https://files.catbox.moe/ivrz4g.mp4" type="video/mp4"></video><button class="btn" onclick="stopVideo()">رجوع</button></div>
+    <div id="forYouStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>لكِ أنتِ 💖</h2><video id="forYouVideo" controls playsinline><source src="https://files.catbox.moe/dyxsft.mp4" type="video/mp4"></video><button class="btn" onclick="stopVideo()">رجوع</button></div>
+    <div id="messageStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>رسالتي 🤍</h2><div class="content-box" style="font-family:'Alexandria'; font-size:14px;">اعرف راح نتعب كثير في الايام القادمه بس ما ابي شي حلو معا غيرك ابي التعاسه معك ولا سعاده معا غيرك خلك معي احبككككك</div><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
+    <div id="message2Step" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>كلمتي 2 💌</h2><div class="content-box" style="font-family:'Alexandria'; font-size:13px; text-align: right;">ادري ياحج انت بتمر ب نفسيه تعبانه ف حاولت اسوي شي بسيط على امل يسعدك احبك رغم المشاكل الي تصير بينا اسف لاني ابيك لحالي واحيانا اشكك في مكانتي بس كله حب لك حتى لو شككت اعرف انك بقلبي كبيررررر واحبك وانا معك ومش تاركك</div><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
+    <div id="poemStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>غزل 📜</h2><div class="content-box" id="randomPoem"></div><button class="btn" onclick="loadPoem()">بيت آخر 🔄</button><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
+
+    <script>
+        let noClicks = 0;
+        let timerInterval;
+
+        const infoList = [
+            "اسمك درتي.. وأنتِ فعلاً (عيون علي) 👀❤️",
+            "عمرك 17 سنة.. أجمل سن لأجمل إنسانة",
+            "ميلادك في 2008/9/25.. اليوم الذي أشرقت فيه الأرض",
+            "طولك 146 سم.. فتنة واختصار للجمال",
+            "وزنك 50 كجم.. خفيفة كالريشة على قلبي",
+            "لديكِ أختان رائعتان: لينا ولين 🌸",
+            "تحبين القهوة بجنون.. (ياليتني قهوة) ☕",
+            "ألوانك المفضلة هي الأزرق والأحمر 💙❤️",
+            "برشلونية مخلصة.. وتعشقين ميسي ⚽",
+            "عاقلة ورزينة عند الجميع.. إلا عندي! 🧠🔥",
+            "مؤدبة وخلوقة.. يازينك ويا زين تربيتك",
+            "عاشقة للشوكلاتة.. وأنتِ أحلى منها بكثير 🍫",
+            "في نظري.. أنتِ إنسانة اجتماعية ومحبوبة",
+            "حنونة جداً.. لكنكِ تزعلين بسرعة 🥺",
+            "صعب جداً أعرف سر زعلك.. كأنكِ لغز جميل",
+            "آسف لأني لم أستطع وصفك.. هذه 1% من حقيقتك"
+        ];
+
+        const poems = ["وَمَا كُنتُ مِمَّن يَدخُلُ العِشقُ قَلبَهُ<br>وَلَكِنَّ مَن يُبصِر جُفونَكِ يَعشَقِ", "أُحِبُّكِ حُبَّينِ حُبَّ الهَوى<br>وَحُبّاً لِأَنَّكِ أَهلٌ لِذاكَا", "لَقَد دَبَّ الهَوى لَكِ في فُؤادي<br>دَبيبَ دَمِ الحَياةِ إِلى عُروقي", "يَا مَنْ حَوَى كُلَّ الحُسْنِ فِي صُورَتِهِ<br>أَنْتِ الجَمَالُ وَأَنْتِ البَدْرُ فِي التَّمَامِ"];
+
+        window.onload = function() {
+            const banTime = localStorage.getItem('banEndTime');
+            if (banTime && new Date().getTime() < banTime) { startBanCounter(Math.ceil((banTime - new Date().getTime()) / 1000)); }
+        };
+
+        function checkPass() {
+            if(document.getElementById('passInput').value.toLowerCase() === "dora") { startMainTimer(); goTo('askStep'); }
+            else { alert("الرمز خطأ يا درتي 🤍"); }
+        }
+
+        function handleNo() {
+            noClicks++;
+            if(noClicks === 1) { alert("لو قدها اضغط مرة ثانية 😤"); }
+            else {
+                const endTime = new Date().getTime() + (120 * 1000);
+                localStorage.setItem('banEndTime', endTime);
+                startBanCounter(120);
+            }
+        }
+
+        function startBanCounter(seconds) {
+            const overlay = document.getElementById('banOverlay');
+            overlay.style.display = 'flex';
+            let time = seconds;
+            const interval = setInterval(() => {
+                let m = Math.floor(time / 60); let s = time % 60;
+                document.getElementById('banTimer').innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                time--;
+                if(time < 0) { clearInterval(interval); localStorage.removeItem('banEndTime'); location.reload(); }
+            }, 1000);
+        }
+
+        function acceptLove() { goTo('menuStep'); }
+
+        function startMainTimer() { updateTimer(); if(!timerInterval) timerInterval = setInterval(updateTimer, 1000); }
+
+        function goTo(id) {
+            document.querySelectorAll('.card').forEach(c => { c.classList.remove('active'); c.style.display = 'none'; });
+            const next = document.getElementById(id);
+            next.style.display = 'flex';
+            next.classList.add('active', 'animate__fadeIn');
+            if(id === 'poemStep') loadPoem();
+            if(id === 'infoStep') loadRandomInfo();
+        }
+
+        function loadRandomInfo() {
+            const infoBox = document.getElementById('infoBox');
+            infoBox.innerHTML = infoList[Math.floor(Math.random() * infoList.length)];
+        }
+
+        function stopVideo() { document.querySelectorAll('video').forEach(v => v.pause()); goTo('menuStep'); }
+        
+        function loadPoem() { document.getElementById('randomPoem').innerHTML = poems[Math.floor(Math.random() * poems.length)]; }
+
+        function updateTimer() {
+            const startDate = new Date(2023, 11, 16, 20, 0, 30); 
+            const diff = new Date() - startDate;
+            const days = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            const html = `<div class="timer-unit"><div class="timer-value">${days}</div><div class="timer-label">يوم</div></div><div class="timer-unit"><div class="timer-value">${hours}</div><div class="timer-label">ساعة</div></div><div class="timer-unit"><div class="timer-value">${minutes}</div><div class="timer-label">دقيقة</div></div><div class="timer-unit"><div class="timer-value">${seconds}</div><div class="timer-label">ثانية</div></div>`;
+            document.querySelectorAll('.daysDisp').forEach(el => el.innerHTML = html);
+        }
+    </script>
+</body>
+</html>
