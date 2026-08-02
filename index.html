@@ -60,7 +60,7 @@
             text-align: center; outline: none; font-size: 15px; box-sizing: border-box;
         }
         
-        video { width: 100%; border-radius: 20px; margin-bottom: 12px; background: #000; }
+        video, .custom-img { width: 100%; border-radius: 20px; margin-bottom: 12px; background: #000; object-fit: cover; }
 
         .waiting-text { font-size: 20px; color: var(--pink); font-weight: 700; margin-bottom: 10px; }
         .dots { display: inline-block; width: 10px; height: 10px; background: var(--pink); border-radius: 50%; margin: 0 3px; animation: bounce 0.6s infinite alternate; }
@@ -106,6 +106,7 @@
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('musicStep')">🎬 لحن</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('forYouStep')">✨ لكِ</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('rememberMeStep')">💭 وخليك فاكرني</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('myMistakeStep')">💔 غلطتي</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('poemStep')">📜 غزل</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('messageStep')">💌 كلمتي</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('message2Step')">💌 كلمتي 2</button>
@@ -140,6 +141,17 @@
             <source src="https://files.catbox.moe/oknyui.mp4" type="video/mp4">
         </video>
         <button class="btn" onclick="stopVideo()">رجوع</button>
+    </div>
+
+    <!-- صفحة غلطتي مع الصورة والعبارة الخاصة بك -->
+    <div id="myMistakeStep" class="card animate__animated">
+        <div class="timer-grid daysDisp"></div>
+        <h2>غلطتي 💔</h2>
+        <img src="https://files.catbox.moe/bmk3p2.jpg" class="custom-img" alt="غلطتي">
+        <div class="content-box" style="font-family:'Alexandria'; font-size:13px; text-align: right; line-height: 1.7;">
+            اسف لاني اختفيت وقتها ماكان في يدي اسف لاني خبيت عليك السبب ما ابي ننفصل معا الايام الجايه انت لي وانا لك مشاكل نعديها مب تعدينا خلينا نصحح اغلاطنا لبعض سويت ذا الخيار عشان دائماً تقولي ماتعتؤف بغلطتك وانا مابشوف غلطه في حياتي الى ذي الصوره احبك وربي يكتبك من نصيبي
+        </div>
+        <button class="btn" onclick="goTo('menuStep')">رجوع</button>
     </div>
 
     <div id="messageStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>رسالتي 🤍</h2><div class="content-box" style="font-family:'Alexandria'; font-size:14px;">اعرف راح نتعب كثير في الايام القادمه بس ما ابي شي حلو معا غيرك ابي التعاسه معك ولا سعاده معا غيرك خلك معي احبككككك</div><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
