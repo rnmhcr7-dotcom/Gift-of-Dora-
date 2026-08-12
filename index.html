@@ -54,10 +54,17 @@
             color: #555; line-height: 1.6; width: 100%; box-sizing: border-box;
         }
 
-        input { 
+        input, textarea { 
             width: 100%; padding: 14px; border-radius: 15px; 
             border: 1.5px solid #eee; margin-bottom: 15px; 
             text-align: center; outline: none; font-size: 15px; box-sizing: border-box;
+            font-family: 'Alexandria', sans-serif;
+        }
+
+        textarea {
+            resize: none;
+            height: 120px;
+            text-align: right;
         }
         
         video, .custom-img { width: 100%; border-radius: 20px; margin-bottom: 12px; background: #000; object-fit: cover; }
@@ -84,12 +91,14 @@
         <div id="banTimer" style="font-size: 50px; font-weight: bold; color: var(--text);">02:00</div>
     </div>
 
+    <!-- تسجيل الدخول -->
     <div id="loginStep" class="card active animate__animated animate__fadeIn">
         <h2 style="margin-bottom: 20px;">هدية درتي ✨</h2>
         <input type="password" id="passInput" placeholder="أدخلي السر">
         <button class="btn" onclick="checkPass()">دخول</button>
     </div>
 
+    <!-- السؤال -->
     <div id="askStep" class="card animate__animated">
         <h2 style="margin-bottom: 25px;">تحبيني؟ 🥺</h2>
         <div style="width: 100%; display: flex; justify-content: center;">
@@ -98,6 +107,7 @@
         </div>
     </div>
 
+    <!-- القائمة الرئيسية -->
     <div id="menuStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2 style="margin-bottom: 15px;">أهلاً بكِ يا درتي 🤍</h2>
@@ -107,12 +117,25 @@
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('forYouStep')">✨ لكِ</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('rememberMeStep')">💭 وخليك فاكرني</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('myMistakeStep')">💔 غلطتي</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('idkStep')">🤷‍♂️ مدري</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('sendMessageStep')">📮 اكتبي لي</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('poemStep')">📜 غزل</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('messageStep')">💌 كلمتي</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('message2Step')">💌 كلمتي 2</button>
         <button class="btn" style="background:#4a4e69; margin-top:10px;" onclick="location.reload()">خروج</button>
     </div>
 
+    <!-- قسم مدري -->
+    <div id="idkStep" class="card animate__animated">
+        <div class="timer-grid daysDisp"></div>
+        <h2>مدري 🤷‍♂️</h2>
+        <p style="font-size: 13px; color: #555; margin-bottom: 10px;">ماعرفت وش اضيف لك ياروحي عطيني افكار</p>
+        <textarea id="idkMsg" placeholder="اكتبي فكرتك هنا..."></textarea>
+        <button class="btn" onclick="sendIdk()">إرسال الفكرة 🕊️</button>
+        <button class="btn" style="background:#666;" onclick="goTo('menuStep')">رجوع</button>
+    </div>
+
+    <!-- قسم التصميم -->
     <div id="designStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <div style="padding: 40px 0;">
@@ -123,6 +146,7 @@
         <button class="btn" onclick="goTo('menuStep')">رجوع</button>
     </div>
 
+    <!-- باقي الأقسام -->
     <div id="infoStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2>هل تعرفين؟ 🤔</h2>
@@ -143,7 +167,6 @@
         <button class="btn" onclick="stopVideo()">رجوع</button>
     </div>
 
-    <!-- صفحة غلطتي مع الصورة والعبارة الخاصة بك -->
     <div id="myMistakeStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2>غلطتي 💔</h2>
@@ -154,11 +177,24 @@
         <button class="btn" onclick="goTo('menuStep')">رجوع</button>
     </div>
 
+    <div id="sendMessageStep" class="card animate__animated">
+        <div class="timer-grid daysDisp"></div>
+        <h2>اكتبي لي 📮</h2>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">أي شيء تكتبيناه هنا سيصلني فوراً.. 🤍</p>
+        <textarea id="telegramMsg" placeholder="اكتبي ما بخاطرك هنا..."></textarea>
+        <button class="btn" onclick="sendToTelegram('telegramMsg', 'وصلتك رسالة جديدة من درتي 🤍:')">إرسال الرسالة 🕊️</button>
+        <button class="btn" style="background:#666;" onclick="goTo('menuStep')">رجوع</button>
+    </div>
+
     <div id="messageStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>رسالتي 🤍</h2><div class="content-box" style="font-family:'Alexandria'; font-size:14px;">اعرف راح نتعب كثير في الايام القادمه بس ما ابي شي حلو معا غيرك ابي التعاسه معك ولا سعاده معا غيرك خلك معي احبككككك</div><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
     <div id="message2Step" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>كلمتي 2 💌</h2><div class="content-box" style="font-family:'Alexandria'; font-size:13px; text-align: right;">ادري ياحج انت بتمر ب نفسيه تعبانه ف حاولت اسوي شي بسيط على امل يسعدك احبك رغم المشاكل الي تصير بينا اسف لاني ابيك لحالي واحيانا اشكك في مكانتي بس كله حب لك حتى لو شككت اعرف انك بقلبي كبيررررر واحبك وانا معك ومش تاركك</div><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
     <div id="poemStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>غزل 📜</h2><div class="content-box" id="randomPoem"></div><button class="btn" onclick="loadPoem()">بيت آخر 🔄</button><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
 
     <script>
+        // إعدادات البوت الخاصة بك
+        const botToken = "7752293061:AAEHynoi8hATy0IUpVOMzzt_PLXN9TniNxo";
+        const chatId = "7752293061";
+
         let noClicks = 0;
         let timerInterval;
 
@@ -194,8 +230,51 @@
         };
 
         function checkPass() {
-            if(document.getElementById('passInput').value.toLowerCase() === "dora") { startMainTimer(); goTo('askStep'); }
-            else { alert("الرمز خطأ يا درتي 🤍"); }
+            if(document.getElementById('passInput').value.toLowerCase() === "dora") {
+                notifyLogin();
+                startMainTimer();
+                goTo('askStep');
+            } else { alert("الرمز خطأ يا درتي 🤍"); }
+        }
+
+        // إرسال تنبيه سري عند الدخول
+        function notifyLogin() {
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: "⚠️ تنبيه سري: درتي دخلت الموقع الآن! 🌸" })
+            }).catch(e => console.log(e));
+        }
+
+        // إرسال فكرة "مدري"
+        function sendIdk() {
+            const text = document.getElementById('idkMsg').value.trim();
+            if(!text) { alert("اكتبي الفكرة أولاً 🤍"); return; }
+            sendToTelegramDirect(text, "فكرة جديدة لـ (مدري) من درتي 💡:");
+            document.getElementById('idkMsg').value = '';
+            goTo('menuStep');
+        }
+
+        function sendToTelegramDirect(text, title) {
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: `${title}\n\n${text}` })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.ok) alert("وصلتني الفكرة، شكراً يا روحي 🤍");
+                else alert("حدث خطأ في الإرسال");
+            })
+            .catch(() => alert("تعذر الإرسال، تحققي من الاتصال بالإنترنت"));
+        }
+
+        function sendToTelegram(inputId, title) {
+            const text = document.getElementById(inputId).value.trim();
+            if(!text) { alert("اكتبي شيئاً أولاً 🤍"); return; }
+            sendToTelegramDirect(text, title);
+            document.getElementById(inputId).value = '';
+            goTo('menuStep');
         }
 
         function handleNo() {
