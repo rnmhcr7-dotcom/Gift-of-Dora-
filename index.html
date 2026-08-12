@@ -124,7 +124,7 @@
         <button class="btn" style="background:#4a4e69; margin-top:10px;" onclick="location.reload()">خروج</button>
     </div>
 
-    <!-- قسم مدري المعدل -->
+    <!-- قسم مدري -->
     <div id="idkStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2>مدري 🤷‍♂️</h2>
@@ -182,7 +182,7 @@
 
     <script>
         const botToken = "7752293061:AAEHynoi8hATy0IUpVOMzzt_PLXN9TniNxo";
-        const chatId = "7752293061";
+        const chatId = "8683942604"; // تم ضبط الـ ID الخاص بك هنا
 
         let noClicks = 0;
         let timerInterval;
@@ -226,7 +226,7 @@
             } else { alert("الرمز خطأ يا درتي 🤍"); }
         }
 
-        // إرسال تنبيه سري في الخلفية دون أي إشعار لها
+        // إرسال تنبيه سري
         function notifyLogin() {
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=✅ تم دخول درتي للموقع الآن!`)
             .catch(e => console.log(e));
