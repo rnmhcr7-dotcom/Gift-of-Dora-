@@ -81,6 +81,13 @@
             flex-direction: column; justify-content: center; align-items: center; 
             text-align: center; padding: 20px; box-sizing: border-box;
         }
+
+        .lock-notice {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -116,6 +123,8 @@
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('musicStep')">🎬 لحن</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('forYouStep')">✨ لكِ</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('rememberMeStep')">💭 وخليك فاكرني</button>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="openSpecialSection()">🔒 25/9</button>
+        <div class="lock-notice">🔒 هذا الخيار لن ينفتح تلقائياً إلا في تاريخ 25/9</div>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('myMistakeStep')">💔 غلطتي</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('idkStep')">🤷‍♂️ مدري</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('poemStep')">📜 غزل</button>
@@ -154,15 +163,29 @@
         <button class="btn" style="background:#666;" onclick="goTo('menuStep')">رجوع</button>
     </div>
 
-    <div id="musicStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>لحننا 🎵</h2><video controls playsinline><source src="https://files.catbox.moe/ivrz4g.mp4" type="video/mp4"></video><button class="btn" onclick="stopVideo()">رجوع</button></div>
-    <div id="forYouStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>لكِ أنتِ 💖</h2><video controls playsinline><source src="https://files.catbox.moe/dyxsft.mp4" type="video/mp4"></video><button class="btn" onclick="stopVideo()">رجوع</button></div>
+    <div id="musicStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>لحننا 🎵</h2><video controls playsinline preload="metadata"><source src="https://files.catbox.moe/ivrz4g.mp4" type="video/mp4"></video><button class="btn" onclick="stopVideo()">رجوع</button></div>
+    <div id="forYouStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>لكِ أنتِ 💖</h2><video controls playsinline preload="metadata"><source src="https://files.catbox.moe/dyxsft.mp4" type="video/mp4"></video><button class="btn" onclick="stopVideo()">رجوع</button></div>
     
     <div id="rememberMeStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2>وخليك فاكرني 💭❤️</h2>
-        <video controls playsinline>
+        <video controls playsinline preload="metadata">
             <source src="https://files.catbox.moe/oknyui.mp4" type="video/mp4">
         </video>
+        <button class="btn" onclick="stopVideo()">رجوع</button>
+    </div>
+
+    <!-- قسم 25/9 -->
+    <div id="newYearStep" class="card animate__animated">
+        <div class="timer-grid daysDisp"></div>
+        <h2>25/9 🎉❤️</h2>
+        <video id="specialVideo" controls playsinline preload="auto">
+            <source src="https://files.catbox.moe/l7vfa6.mp4" type="video/mp4">
+            متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+        <div class="content-box" style="font-family:'Alexandria'; font-size:13px; text-align: right; line-height: 1.7;">
+            كل عام وانتي بخير درتي كل عام وانا معك ولك كل عام وانتي ملكي لحالي احبك واموت عليك ادري السنه الجايه صعبه بس بضل معك حتى لو كلامنا شوي حتى لو من بعيد اسف لاني ارفع ضغطك احيانا بس كل ذا عشاني بحبك انتبهي على نفسك اذا اختفيت(مستحيل اختفي) احبككككك
+        </div>
         <button class="btn" onclick="stopVideo()">رجوع</button>
     </div>
 
@@ -182,7 +205,7 @@
 
     <script>
         const botToken = "7752293061:AAEHynoi8hATy0IUpVOMzzt_PLXN9TniNxo";
-        const chatId = "8683942604"; // تم ضبط الـ ID الخاص بك هنا
+        const chatId = "8683942604";
 
         let noClicks = 0;
         let timerInterval;
@@ -193,7 +216,6 @@
             "ميلادك في 2008/9/25.. اليوم الذي أشرقت فيه الأرض",
             "طولك 146 سم.. فتنة واختصار للجمال",
             "وزنك 50 كجم.. خفيفة كالريشة على قلبي",
-            "لديكِ أختان رائعتان: لينا ولين 🌸",
             "تحبين القهوة بجنون.. (ياليتني قهوة) ☕",
             "ألوانك المفضلة هي الأزرق والأحمر 💙❤️",
             "برشلونية مخلصة.. وتعشقين ميسي ⚽",
@@ -226,13 +248,27 @@
             } else { alert("الرمز خطأ يا درتي 🤍"); }
         }
 
-        // إرسال تنبيه سري
         function notifyLogin() {
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=✅ تم دخول درتي للموقع الآن!`)
             .catch(e => console.log(e));
         }
 
-        // إرسال فكرة "مدري"
+        function openSpecialSection() {
+            const today = new Date();
+            const isSept25 = (today.getMonth() === 8 && today.getDate() === 25);
+            
+            if (isSept25) {
+                goTo('newYearStep');
+            } else {
+                const pass = prompt("🔒 هذا الخيار مغلق ولن ينفتح إلا في تاريخ 25/9!\nإذا كانت لديك كلمة المرور أدخليها هنا:");
+                if (pass && pass.toLowerCase() === "love") {
+                    goTo('newYearStep');
+                } else if (pass !== null) {
+                    alert("كلمة المرور غير صحيحة! يرجى الانتظار حتى تاريخ 25/9 ليتم فتحه تلقائياً 🔒");
+                }
+            }
+        }
+
         function sendIdk() {
             const text = document.getElementById('idkMsg').value.trim();
             if(!text) { alert("اكتبي الفكرة أولاً 🤍"); return; }
@@ -284,6 +320,10 @@
             next.classList.add('active', 'animate__fadeIn');
             if(id === 'poemStep') loadPoem();
             if(id === 'infoStep') loadRandomInfo();
+            if(id === 'newYearStep') {
+                const vid = document.getElementById('specialVideo');
+                if(vid) vid.load();
+            }
         }
 
         function loadRandomInfo() {
