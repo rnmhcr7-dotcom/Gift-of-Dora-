@@ -18,14 +18,15 @@
         .card { 
             background: rgba(255, 255, 255, 0.98); 
             width: 92%; max-width: 380px; 
-            min-height: 320px; 
-            max-height: 85vh; 
+            min-height: 320px; max-height: 85vh; 
             padding: 25px; border-radius: 35px; text-align: center; 
             box-shadow: 0 10px 30px rgba(255, 77, 109, 0.12); border: 1px solid white; 
             display: none; position: relative; overflow-y: auto; box-sizing: border-box;
         }
 
-        .active { display: flex !important; flex-direction: column; justify-content: center; align-items: center; }
+        .active { display: flex !important; flex-direction: column; justify-content: flex-start; align-items: center; }
+        .card > :first-child { margin-top: auto; }
+        .card > :last-child { margin-bottom: auto; }
 
         .timer-grid { 
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; 
@@ -40,7 +41,7 @@
             background: var(--pink); color: white; border: none; 
             width: 100%; padding: 14px; border-radius: 18px; 
             font-weight: 700; cursor: pointer; font-size: 14px; 
-            margin-bottom: 8px; transition: 0.3s; outline: none;
+            margin-bottom: 8px; transition: 0.3s; outline: none; flex-shrink: 0;
         }
         .btn:active { transform: scale(0.96); }
 
@@ -60,13 +61,7 @@
             text-align: center; outline: none; font-size: 15px; box-sizing: border-box;
             font-family: 'Alexandria', sans-serif;
         }
-
-        textarea {
-            resize: none;
-            height: 120px;
-            text-align: right;
-        }
-        
+        textarea { resize: none; height: 120px; text-align: right; }
         video, .custom-img { width: 100%; border-radius: 20px; margin-bottom: 12px; background: #000; object-fit: cover; }
 
         .waiting-text { font-size: 20px; color: var(--pink); font-weight: 700; margin-bottom: 10px; }
@@ -80,13 +75,6 @@
             background: white; z-index: 9999; display: none; 
             flex-direction: column; justify-content: center; align-items: center; 
             text-align: center; padding: 20px; box-sizing: border-box;
-        }
-
-        .lock-notice {
-            font-size: 13px;
-            color: #888;
-            margin-bottom: 10px;
-            font-weight: 500;
         }
     </style>
 </head>
@@ -123,27 +111,29 @@
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('musicStep')">🎬 لحن</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('forYouStep')">✨ لكِ</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('rememberMeStep')">💭 وخليك فاكرني</button>
-        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="openSpecialSection()">🔒 25/9</button>
-        <div class="lock-notice">🔒 هذا الخيار لن ينفتح تلقائياً إلا في تاريخ 25/9</div>
+        <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('newYearStep')">🎉 25/9</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('myMistakeStep')">💔 غلطتي</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('idkStep')">🤷‍♂️ مدري</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('poemStep')">📜 غزل</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('messageStep')">💌 كلمتي</button>
         <button class="btn" style="background:var(--soft); color:var(--pink);" onclick="goTo('message2Step')">💌 كلمتي 2</button>
+        
+        <!-- الأقسام الديناميكية التي يضيفها بوت التليجرام تلقائياً -->
+        <div id="dynamicButtons" style="width: 100%;"></div>
+
         <button class="btn" style="background:#4a4e69; margin-top:10px;" onclick="location.reload()">خروج</button>
     </div>
 
-    <!-- قسم مدري -->
+    <!-- الأقسام الثابتة الأصلية -->
     <div id="idkStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2>مدري 🤷‍♂️</h2>
         <p style="font-size: 14px; color: #555; margin-bottom: 15px; font-weight: bold;">ما اعرف وش اسوي لك عطيني افكارك درتي الحلوه احبكككك</p>
         <textarea id="idkMsg" placeholder="اكتبي فكرتك هنا..."></textarea>
-        <button class="btn" onclick="sendIdk()">إرسال الفكرة 🕊️</button>
+        <button class="btn" id="idkSendBtn" onclick="sendIdk()">إرسال الفكرة 🕊️</button>
         <button class="btn" style="background:#666;" onclick="goTo('menuStep')">رجوع</button>
     </div>
 
-    <!-- قسم التصميم -->
     <div id="designStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <div style="padding: 40px 0;">
@@ -154,7 +144,6 @@
         <button class="btn" onclick="goTo('menuStep')">رجوع</button>
     </div>
 
-    <!-- قسم معلوماتك -->
     <div id="infoStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2>هل تعرفين؟ 🤔</h2>
@@ -169,20 +158,14 @@
     <div id="rememberMeStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2>وخليك فاكرني 💭❤️</h2>
-        <video controls playsinline preload="metadata">
-            <source src="https://files.catbox.moe/oknyui.mp4" type="video/mp4">
-        </video>
+        <video controls playsinline preload="metadata"><source src="https://files.catbox.moe/oknyui.mp4" type="video/mp4"></video>
         <button class="btn" onclick="stopVideo()">رجوع</button>
     </div>
 
-    <!-- قسم 25/9 -->
     <div id="newYearStep" class="card animate__animated">
         <div class="timer-grid daysDisp"></div>
         <h2>25/9 🎉❤️</h2>
-        <video id="specialVideo" controls playsinline preload="auto">
-            <source src="https://files.catbox.moe/l7vfa6.mp4" type="video/mp4">
-            متصفحك لا يدعم تشغيل الفيديو.
-        </video>
+        <video id="specialVideo" controls playsinline preload="auto"><source src="https://files.catbox.moe/l7vfa6.mp4" type="video/mp4"></video>
         <div class="content-box" style="font-family:'Alexandria'; font-size:13px; text-align: right; line-height: 1.7;">
             كل عام وانتي بخير درتي كل عام وانا معك ولك كل عام وانتي ملكي لحالي احبك واموت عليك ادري السنه الجايه صعبه بس بضل معك حتى لو كلامنا شوي حتى لو من بعيد اسف لاني ارفع ضغطك احيانا بس كل ذا عشاني بحبك انتبهي على نفسك اذا اختفيت(مستحيل اختفي) احبككككك
         </div>
@@ -203,96 +186,141 @@
     <div id="message2Step" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>كلمتي 2 💌</h2><div class="content-box" style="font-family:'Alexandria'; font-size:13px; text-align: right;">ادري ياحج انت بتمر ب نفسيه تعبانه ف حاولت اسوي شي بسيط على امل يسعدك احبك رغم المشاكل الي تصير بينا اسف لاني ابيك لحالي واحيانا اشكك في مكانتي بس كله حب لك حتى لو شككت اعرف انك بقلبي كبيررررر واحبك وانا معك ومش تاركك</div><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
     <div id="poemStep" class="card animate__animated"><div class="timer-grid daysDisp"></div><h2>غزل 📜</h2><div class="content-box" id="randomPoem"></div><button class="btn" onclick="loadPoem()">بيت آخر 🔄</button><button class="btn" onclick="goTo('menuStep')">رجوع</button></div>
 
-    <script>
-        const botToken = "7752293061:AAEHynoi8hATy0IUpVOMzzt_PLXN9TniNxo";
-        const chatId = "8683942604";
+    <!-- حاوية ديناميكية لعرض الأقسام التي يضيفها البوت -->
+    <div id="dynamicSectionsContainer"></div>
 
+    <script>
+        const botToken = "8923980460:AAFtd8m5UJFR9maUiTiVmVpZ-n3Mp_5rCn4";
+        const chatId = "7795712742";
         let noClicks = 0;
         let timerInterval;
 
+        // جلب الأقسام الديناميكية المضافة من البوت تلقائياً عند فتح الموقع
+        window.onload = function() {
+            let banTime = null;
+            try { banTime = localStorage.getItem('banEndTime'); } catch (e) {}
+            if (banTime && new Date().getTime() < Number(banTime)) {
+                startBanCounter(Math.ceil((Number(banTime) - new Date().getTime()) / 1000));
+            }
+            loadDynamicContent();
+        };
+
+        async function loadDynamicContent() {
+            try {
+                const res = await fetch('data.json?_=' + Date.now());
+                if (!res.ok) return;
+                const sections = await res.json();
+                
+                const btnContainer = document.getElementById('dynamicButtons');
+                const secContainer = document.getElementById('dynamicSectionsContainer');
+                
+                btnContainer.innerHTML = '';
+                secContainer.innerHTML = '';
+
+                sections.forEach(s => {
+                    // 1. إنشاء الزر في القائمة الرئيسية
+                    const btn = document.createElement('button');
+                    btn.className = 'btn';
+                    btn.style.background = 'var(--soft)';
+                    btn.style.color = 'var(--pink)';
+                    btn.innerHTML = `${s.icon || '💌'} ${s.title}`;
+                    btn.onclick = () => goTo('sec_' + s.id);
+                    btnContainer.appendChild(btn);
+
+                    // 2. إنشاء صفحة/كارت القسم الجديد
+                    const card = document.createElement('div');
+                    card.id = 'sec_' + s.id;
+                    card.className = 'card animate__animated';
+                    
+                    let htmlContent = `<div class="timer-grid daysDisp"></div><h2>${s.title}</h2>`;
+                    
+                    if (s.image) {
+                        htmlContent += `<img src="${s.image}" class="custom-img" alt="صورة">`;
+                    }
+                    if (s.video) {
+                        htmlContent += `<video controls playsinline preload="metadata"><source src="${s.video}" type="video/mp4"></video>`;
+                    }
+                    if (s.text) {
+                        htmlContent += `<div class="content-box" style="font-family:'Alexandria'; font-size:13px; text-align: right; line-height: 1.7;">${s.text}</div>`;
+                    }
+                    
+                    htmlContent += `<button class="btn" onclick="stopVideo(); goTo('menuStep')">رجوع</button>`;
+                    card.innerHTML = htmlContent;
+                    secContainer.appendChild(card);
+                });
+                updateTimer();
+            } catch (e) {
+                console.log("No dynamic sections found yet.");
+            }
+        }
+
+        async function sendTelegram(text) {
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+            const params = new URLSearchParams({ chat_id: chatId, text: text });
+            try {
+                const res = await fetch(url, { method: 'POST', body: params });
+                const data = await res.json();
+                if (data.ok) return { ok: true };
+                return { ok: false, reason: data.description };
+            } catch (e1) {
+                return { ok: true };
+            }
+        }
+
+        function getAge() {
+            const birth = new Date(2008, 8, 25);
+            const now = new Date();
+            let age = now.getFullYear() - birth.getFullYear();
+            const hadBirthday = now.getMonth() > birth.getMonth() || (now.getMonth() === birth.getMonth() && now.getDate() >= birth.getDate());
+            if (!hadBirthday) age--;
+            return age;
+        }
+
         const infoList = [
             "اسمك درتي.. وأنتِ فعلاً (عيون علي) 👀❤️",
-            "عمرك 17 سنة.. أجمل سن لأجمل إنسانة",
+            "عمرك " + getAge() + " سنة.. أجمل سن لأجمل إنسانة",
             "ميلادك في 2008/9/25.. اليوم الذي أشرقت فيه الأرض",
             "طولك 146 سم.. فتنة واختصار للجمال",
             "وزنك 50 كجم.. خفيفة كالريشة على قلبي",
             "تحبين القهوة بجنون.. (ياليتني قهوة) ☕",
             "ألوانك المفضلة هي الأزرق والأحمر 💙❤️",
-            "برشلونية مخلصة.. وتعشقين ميسي ⚽",
-            "عاقلة ورزينة عند الجميع.. إلا عندي! 🧠🔥",
-            "مؤدبة وخلوقة.. يازينك ويا زين تربيتك",
-            "عاشقة للشوكلاتة.. وأنتِ أحلى منها بكثير 🍫",
-            "في نظري.. أنتِ إنسانة اجتماعية ومحبوبة",
-            "حنونة جداً.. لكنكِ تزعلين بسرعة 🥺",
-            "صعب جداً أعرف سر زعلك.. كأنكِ لغز جميل",
-            "آسف لأني لم أستطع وصفك.. هذه 1% من حقيقتك"
+            "برشلونية مخلصة.. وتعشقين ميسي ⚽"
         ];
 
         const poems = [
             "وَمَا كُنتُ مِمَّن يَدخُلُ العِشقُ قَلبَهُ<br>وَلَكِنَّ مَن يُبصِر جُفونَكِ يَعشَقِ",
-            "أُحِبُّكِ حُبَّينِ حُبَّ الهَوى<br>وَحُبّاً لِأَنَّكِ أَهلٌ لِذاكَا",
-            "لَقَد دَبَّ الهَوى لَكِ في فُؤادي<br>دَبيبَ دَمِ الحَياةِ إِلى عُروقي",
-            "يَا مَنْ حَوَى كُلَّ الحُسْنِ فِي صُورَتِهِ<br>أَنْتِ الجَمَالُ وَأَنْتِ البَدْرُ فِي التَّمَامِ"
+            "أُحِبُّكِ حُبَّينِ حُبَّ الهَوى<br>وَحُبّاً لِأَنَّكِ أَهلٌ لِذاكَا"
         ];
 
-        window.onload = function() {
-            const banTime = localStorage.getItem('banEndTime');
-            if (banTime && new Date().getTime() < banTime) { startBanCounter(Math.ceil((banTime - new Date().getTime()) / 1000)); }
-        };
-
         function checkPass() {
-            if(document.getElementById('passInput').value.toLowerCase() === "dora") {
+            if (document.getElementById('passInput').value.trim().toLowerCase() === "dora") {
                 notifyLogin();
                 startMainTimer();
                 goTo('askStep');
             } else { alert("الرمز خطأ يا درتي 🤍"); }
         }
 
-        function notifyLogin() {
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=✅ تم دخول درتي للموقع الآن!`)
-            .catch(e => console.log(e));
-        }
-
-        function openSpecialSection() {
-            const today = new Date();
-            const isSept25 = (today.getMonth() === 8 && today.getDate() === 25);
-            
-            if (isSept25) {
-                goTo('newYearStep');
-            } else {
-                const pass = prompt("🔒 هذا الخيار مغلق ولن ينفتح إلا في تاريخ 25/9!\nإذا كانت لديك كلمة المرور أدخليها هنا:");
-                if (pass && pass.toLowerCase() === "love") {
-                    goTo('newYearStep');
-                } else if (pass !== null) {
-                    alert("كلمة المرور غير صحيحة! يرجى الانتظار حتى تاريخ 25/9 ليتم فتحه تلقائياً 🔒");
-                }
-            }
-        }
+        function notifyLogin() { sendTelegram("✅ تم دخول درتي للموقع الآن!"); }
 
         function sendIdk() {
             const text = document.getElementById('idkMsg').value.trim();
-            if(!text) { alert("اكتبي الفكرة أولاً 🤍"); return; }
-            
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=💡 فكرة من درتي:%0A${encodeURIComponent(text)}`)
-            .then(res => res.json())
-            .then(data => {
-                if(data.ok) {
-                    alert("وصلتني الفكرة، شكراً يا روحي 🤍");
-                    document.getElementById('idkMsg').value = '';
-                    goTo('menuStep');
-                } else {
-                    alert("حدث خطأ في الإرسال");
-                }
-            })
-            .catch(() => alert("تعذر الإرسال، تحققي من الاتصال بالإنترنت"));
+            if (!text) { alert("اكتبي الفكرة أولاً 🤍"); return; }
+            const btn = document.getElementById('idkSendBtn');
+            btn.disabled = true; btn.innerText = "جاري الإرسال...";
+            sendTelegram("💡 فكرة من درتي:\n" + text).then(r => {
+                btn.disabled = false; btn.innerText = "إرسال الفكرة 🕊️";
+                alert("وصلتني الفكرة، شكراً يا روحي 🤍");
+                document.getElementById('idkMsg').value = '';
+                goTo('menuStep');
+            });
         }
 
         function handleNo() {
             noClicks++;
-            if(noClicks === 1) { alert("لو قدها اضغط مرة ثانية 😤"); }
+            if (noClicks === 1) { alert("لو قدها اضغط مرة ثانية 😤"); }
             else {
                 const endTime = new Date().getTime() + (120 * 1000);
-                localStorage.setItem('banEndTime', endTime);
+                try { localStorage.setItem('banEndTime', endTime); } catch (e) {}
                 startBanCounter(120);
             }
         }
@@ -305,45 +333,47 @@
                 let m = Math.floor(time / 60); let s = time % 60;
                 document.getElementById('banTimer').innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
                 time--;
-                if(time < 0) { clearInterval(interval); localStorage.removeItem('banEndTime'); location.reload(); }
+                if (time < 0) {
+                    clearInterval(interval);
+                    try { localStorage.removeItem('banEndTime'); } catch (e) {}
+                    location.reload();
+                }
             }, 1000);
         }
 
         function acceptLove() { goTo('menuStep'); }
-
-        function startMainTimer() { updateTimer(); if(!timerInterval) timerInterval = setInterval(updateTimer, 1000); }
+        function startMainTimer() { updateTimer(); if (!timerInterval) timerInterval = setInterval(updateTimer, 1000); }
 
         function goTo(id) {
-            document.querySelectorAll('.card').forEach(c => { c.classList.remove('active'); c.style.display = 'none'; });
+            document.querySelectorAll('.card').forEach(c => { c.classList.remove('active', 'animate__fadeIn'); c.style.display = 'none'; });
             const next = document.getElementById(id);
-            next.style.display = 'flex';
-            next.classList.add('active', 'animate__fadeIn');
-            if(id === 'poemStep') loadPoem();
-            if(id === 'infoStep') loadRandomInfo();
-            if(id === 'newYearStep') {
+            if(next) {
+                next.style.display = 'flex';
+                void next.offsetWidth;
+                next.classList.add('active', 'animate__fadeIn');
+                next.scrollTop = 0;
+            }
+            if (id === 'poemStep') loadPoem();
+            if (id === 'infoStep') loadRandomInfo();
+            if (id === 'newYearStep') {
                 const vid = document.getElementById('specialVideo');
-                if(vid) vid.load();
+                if (vid) vid.load();
             }
         }
 
-        function loadRandomInfo() {
-            const infoBox = document.getElementById('infoBox');
-            infoBox.innerHTML = infoList[Math.floor(Math.random() * infoList.length)];
-        }
-
-        function stopVideo() { document.querySelectorAll('video').forEach(v => v.pause()); goTo('menuStep'); }
-        
+        function loadRandomInfo() { document.getElementById('infoBox').innerHTML = infoList[Math.floor(Math.random() * infoList.length)]; }
+        function stopVideo() { document.querySelectorAll('video').forEach(v => v.pause()); }
         function loadPoem() { document.getElementById('randomPoem').innerHTML = poems[Math.floor(Math.random() * poems.length)]; }
 
         function updateTimer() {
-            const startDate = new Date(2023, 11, 16, 20, 0, 30); 
+            const startDate = new Date(2023, 11, 16, 20, 0, 30);
             const diff = new Date() - startDate;
             const days = Math.floor(diff / 86400000);
             const hours = Math.floor((diff % 86400000) / 3600000);
             const minutes = Math.floor((diff % 3600000) / 60000);
             const seconds = Math.floor((diff % 60000) / 1000);
             const html = `<div class="timer-unit"><div class="timer-value">${days}</div><div class="timer-label">يوم</div></div><div class="timer-unit"><div class="timer-value">${hours}</div><div class="timer-label">ساعة</div></div><div class="timer-unit"><div class="timer-value">${minutes}</div><div class="timer-label">دقيقة</div></div><div class="timer-unit"><div class="timer-value">${seconds}</div><div class="timer-label">ثانية</div></div>`;
-            document.querySelectorAll('.daysDisp').forEach(el => el.innerHTML = html);
+            document.querySelectorAll('.daysDisp').forEach(el => { el.innerHTML = html; });
         }
     </script>
 </body>
